@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="manual">Exploiting & Reversing Field Manual 2018</h1>
+  <div class="stackedit__html">
   <pre><code>❯ ./rabbit_pwned
 
 	                  .".
