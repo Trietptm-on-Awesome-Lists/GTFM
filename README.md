@@ -83,7 +83,7 @@ hit breakpoint at: 80485a3
 
 </code></pre>
 <h4>[Exploit]:</h4><p></p>
-<h4>[URL Reto]:</h4><p>--Precision100 CSAW CTF 2015--, <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">precision100</a></p>
+<h4>[URL Reto]:</h4><p><a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a></p>
 <p>[Continuara...]</p>
 </div>
 </body>
