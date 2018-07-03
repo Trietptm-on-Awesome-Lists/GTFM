@@ -37,9 +37,9 @@
 <p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018. 
 Realmente cada reto esta dividido en seis apartados con lo mas resañable e interesante a la hora de usar el Exploiting & Reversing Field Manual 2018 como una referencia y consulta
 a la hora de estar resolviendo un reto y ver la tecnica usada, los comandos usados, un breve resumen de un informe mas detallado y el codigo del exploit.</p>
-<h2><a id="refs_uno" href="#refs_uno"> 1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</a></h2>
+<h2><a id="refs_uno" href="#refs_uno"> 1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value(canary) + shellcode</a></h2>
 <h4>[Resumen]:</h4><p>Tenemos que explotar un Buffer Overflow protegido con un stack canary float value</p>
-<h4>[Tecnica]:</h4><p>Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</p>
+<h4>[Tecnica]:</h4><p>Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value(canary) + shellcode</p>
 <h4>[Informe]:</h4><p>Comenzamos analizando estaticamente el codigo desensamblado del binario. La funcion mas resañable donde se encuentra la vulnerabilidad es en el <code>main()</code>. 
 En esta funcion una vez es llamada y configurar el stack en el prologo ejecuta una instruccion realizando floating load <code>fld qword [0x8048690]</code>.
 Seguidamente carga el float value en el stack <code>fstp qword [esp + 0x98]</code>. Luego analizando el desensamblado del binario realiza una serie de llamadas a 
