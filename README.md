@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="manual">Black Team Field Manual</h1>
-  <pre><code>❯ ./exploiting_reversing
+  <div class="stackedit__html"><h1 id="manual">Exploiting & Reversing Field Manual</h1>
+  <pre><code>❯ ./rabbit_pwned
 
-	                      .".
+	                  .".
                          /  |
                         /  /
                        / ,"
