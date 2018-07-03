@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="manual">Exploiting & Reversing Field Manual</h1>
+  <div class="stackedit__html"><h1 id="manual">Exploiting & Reversing Field Manual 2018</h1>
   <pre><code>❯ ./rabbit_pwned
 
 	                  .".
@@ -34,8 +34,8 @@
 <h4 id="indice-exploiting">[Exploiting]</h4>
 <p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
 <h2 id="introduccion">Introduccion</h2>
-<p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018/2019. 
-Realmente cada reto esta dividido en seis apartados con lo mas resañable e interesante a la hora de usar el black field manual como una referencia y consulta
+<p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018. 
+Realmente cada reto esta dividido en seis apartados con lo mas resañable e interesante a la hora de usar el Exploiting & Reversing Field Manual 2018 como una referencia y consulta
 a la hora de estar resolviendo un reto y ver la tecnica usada, los comandos usados, un breve resumen de un informe mas detallado y el codigo del exploit.</p>
 <h2><a id="refs_uno" href="#refs_uno"> 1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</a></h2>
 <h4>[Resumen]:</h4><p>Tenemos que explotar un Buffer Overflow protegido con un stack canary float value</p>
