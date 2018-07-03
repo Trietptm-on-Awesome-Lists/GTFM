@@ -74,7 +74,7 @@ hit breakpoint at: 80485a3
 |           0x080485a3 b    dfe9           fucompi st(1)                                                                                  
 |           0x080485a5      ddd8           fstp st(0)
 
-[0x080485a3]> px@esp+0x98
+[0x080485a3]> px@esp+0x98 #Desensamblado de la dirección de memoria correspondiente a esp+0x98
 - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
 0xffa3da68  a531 5a47 5515 5040 0050 edf7 0050 edf7  .1ZGU.P@.P...P..
 
@@ -83,8 +83,8 @@ hit breakpoint at: 80485a3
 
 </code></pre>
 <h4>[Exploit]:</h4><p></p>
-<h4>[URL Reto]:</h4><p>--Precision100 CSAW CTF 2015--, https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650</p>
-
+<h4>[URL Reto]:</h4><p>--Precision100 CSAW CTF 2015--, <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">precision100</a></p>
+<p>[Continuara...]</p>
 </div>
 </body>
 
