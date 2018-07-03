@@ -29,7 +29,7 @@
           \_  (__   (__        
             "-._,)--._,)
 </code></pre>
-<p>Escrito por Alvaro M. aka <code>@naivenom</code>.</p>
+<p>Escrito por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
 <p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
