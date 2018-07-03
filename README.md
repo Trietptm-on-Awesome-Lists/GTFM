@@ -32,12 +32,12 @@
 <p>Escrito por Alvaro M. aka <code>@naivenom</code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
-<p><a href="#refs">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
+<p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
 <h2 id="introduccion">Introduccion</h2>
 <p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018/2019. 
 Realmente cada reto esta dividido en seis apartados con lo mas resañable e interesante a la hora de usar el black field manual como una referencia y consulta
 a la hora de estar resolviendo un reto y ver la tecnica usada, los comandos usados, un breve resumen de un informe mas detallado y el codigo del exploit.</p>
-<h2><a id="refs" href="#refs"> #1# Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</a></h2>
+<h2><a id="refs_uno" href="#refs_uno"> 1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</a></h2>
 <h4>[Resumen]:</h4><p>Tenemos que explotar un Buffer Overflow protegido con un stack canary float value</p>
 <h4>[Tecnica]:</h4><p>Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode</p>
 <h4>[Informe]:</h4><p>Comenzamos analizando estaticamente el codigo desensamblado del binario. La funcion mas resañable donde se encuentra la vulnerabilidad es en el <code>main()</code>. 
