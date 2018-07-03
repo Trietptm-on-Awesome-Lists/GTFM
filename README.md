@@ -32,7 +32,7 @@
 <p>Escrito por Alvaro M. aka <code>@naivenom</code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
-<p><a href="https://naivenom.github.io/Smashing-Rabbit#1">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
+<p><a href="#1">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value + shellcode (I)</a></p>
 <h2 id="introduccion">Introduccion</h2>
 <p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018/2019. 
 Realmente cada reto esta dividido en seis apartados con lo mas resañable e interesante a la hora de usar el black field manual como una referencia y consulta
