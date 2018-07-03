@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html">
+  <div class="stackedit__html"><h1 id="manual">[User Space]...</h1>
   <pre><code>❯ ./rabbit_pwned
 
 	                  .".
@@ -95,7 +95,7 @@ Continuing.
 Buff: 0xffffd238
 AAAAAAAAAA #Vamos a enviar poco contenido para no sobreescribir el float value en el stack
 Breakpoint 2, 0x080485a3 in main ()
-gdb-peda$ info float
+gdb-peda$ info float #Valores de los registros de la FPU, son iguales debido a que no se han alterado
   R7: Valid   0x400580aaaa3ad18d2800 +64.33333000000000368      
 =>R6: Valid   0x400580aaaa3ad18d2800 +64.33333000000000368  
 gdb-peda$ x/wx 0x8048690
@@ -116,7 +116,7 @@ hit breakpoint at: 80485a3
 0xfff92238  4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
 0xfff92248  4141 4141 4100 eef7 0040 f0f7 0000 0000  AAAAA....@......
 </code></pre>
-<pre><code>
+<pre><code>❯ r2 -d precision 
 [0x0804851d]> db 0x08048543
 [0x0804851d]> dc
 hit breakpoint at: 8048543
