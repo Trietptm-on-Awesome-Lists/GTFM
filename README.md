@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="manual">Black Team Field Manual 2019</h1>
+  <div class="stackedit__html"><h1 id="manual">Exploiting, reversing y ++</h1>
   <pre><code>❯ ./exploiting_reversing
 
 	                      .".
