@@ -94,7 +94,6 @@ $ python -c 'import pty; pty.spawn("/bin/sh")'
 /bin/bash -i
 root@kali:/root/Desktop# $  
 </code></pre>
-&nbsp;
 <h4>[Comandos]:</h4>
 En esta sección haremos una explicación breve paso a paso de los comandos ejecutados. Colocamos un breakpoint justo en la instrucción <code>fucompi</code> y ejecutamos hasta el bp. Seguidamente entramos en visual mode. Por último vemos el desensamblado de la instrucción <code>[esp+0x98]</code> cuyo contenido en esa dirección de memoria es el valor del float value.
 <pre><code>❯ r2 -d precision                                                                            
