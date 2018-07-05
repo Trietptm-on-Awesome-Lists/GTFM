@@ -268,5 +268,3 @@ p.interactive()
 </div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a>
-
-</div>
