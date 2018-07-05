@@ -32,7 +32,7 @@
 <p>Redactado por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
-<p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros + float value(canary) + shellcode (I)</a></p>
+<p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
 <h2 id="introduccion">Introduccion</h2>
 <p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018. 
 Realmente cada tecnica esta dividida en seis apartados con lo mas resañable e interesante a la hora de usar el Exploiting & Reversing Field Manual 2018 como una referencia y consulta a la hora de estar resolviendo un reto y ver la tecnica usada, los comandos usados, un breve resumen de un informe mas detallado y el codigo del exploit.
