@@ -39,7 +39,7 @@ Realmente cada tecnica esta dividida en seis apartados con lo mas resañable e i
 En la seccion de comandos solo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. No olviden que es un Field Manual y no tiene que ser extenso en cuanto a write-up de la tecnica, sino lo más importante y versatil para cuando se encuentren un problema de las mismas características.</p>
 <h2><a id="refs_uno" href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Informe]:</h4>
-<em><strong>Recolección de información</strong></em>
+<p><em><strong>Recolección de información</strong></em></p>
 
 Comenzamos analizando estáticamente el código desensamblado del binario. La función más resañable donde se encuentra la vulnerabilidad es en el <code>main()</code>.
 En esta función una vez es llamada y configurar el stack en el prólogo ejecuta una instruccion realizando floating load <code>fld qword [0x8048690]</code>.
@@ -56,7 +56,7 @@ Bypass:            AAAAAAAAAAAAAAAAAAAAAAAAAA + 0.245454 + MEMORY ADDRESS
 Cuando debugeamos el binario y nos encontramos en la dirección de memoria <code>0x080485a3</code> y queremos desensamblar la dirección que contiene el float original value aparece su contenido, sin embargo si desensamblamos la dirección de memoria del stack <code>[esp+0x98]</code> podemos observar que su contenido son justo los valores <code>0x41414141</code> ya que con el data o "junk" que hemos enviado sobreescribe el float value y el stack canary nos lo detectara.
 
 Seguidamente debemos saber donde esta localizada la dirección de memoria del float en el stack, y esta en los últimos 8 Bytes de <code>0xffffd2b0</code>
-<em><strong>Explotación</strong></em>
+<p><em><strong>Explotación</strong></em></p>
 
 Bien una vez obtenido toda la información necesaria para la explotación vamos a proceder usando GDB y colocando tres breakpoint en diferentes localizaciones del <code>main</code>:<code>0x804851d</code>,  <code>0x8048553</code>y <code>0x080485a3</code>
 Usaremos la salida de la ejecución del primer buffer (ver:exploit) como entrada en el binario cuando lo ejecutemos. Cuando estamos en el último breakpoint y desensamblamos <code>$esp</code> vemos que con lo enviamos no sobreescribimos el float value: <code>0x475a31a5 0x40501555</code> por lo tanto ya lo tenemos calculado para poder bypassear el stack canary!.
@@ -69,7 +69,7 @@ El resultado es el mismo, así que simplemente tenemos que coger: <code>b04b2c40
 
 Sabemos que el buffer que nos imprime por pantalla al ejecutar el binario coincide con la dirección de memoria del inicio de nuestro buffer donde realizamos el padding de <code>\x90</code> y luego nuestra shellcode, etc...Por tanto sabiendo que esa es la dirección de memoria que debemos sobreescribir <code>$eip</code> tenemos que tener en cuenta cuando desarrollemos el exploit y sabiendo que nos hace leak de la dirección usar en python la función <code>raw_input()</code> para añadirlo y el problema estará resuelto.
 
-<em><strong>Obteniendo root shell</strong></em>
+<p><em><strong>Obteniendo root shell</strong></em></p>
 Pudimos debuggear y analizar el binario en nuestra maquina, pero ahora toca la fase en la que ganamos acceso. El binario vulnerable esta ejecutandose en el servidor victima en el puerto 1234.
 <pre><code>root@kali:~/Desktop# nc -nvlp 1234 -e ./precision
 listening on [any] 1234 ...
