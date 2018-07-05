@@ -35,7 +35,7 @@
 <p><a href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
 <h2 id="introduccion">Introduccion</h2>
 <p>Recomiendo que se tome este manual como una referencia y no una explicacion detallada de los retos que he ido realizando a lo largo del 2018. 
-Realmente cada técnica esta dividida en seis apartados con lo mas resañable e interesante a la hora de usar el Exploiting & Reversing Field Manual 2018 como una referencia y consulta a la hora de estar resolviendo un reto y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
+Realmente cada técnica esta dividida en seis apartados con lo mas resañable e interesante a la hora de usar el Exploiting-Reversing Field Manual como una referencia y consulta a la hora de estar resolviendo un reto y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
 En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y no tiene que ser extenso en cuanto a write-up de la técnica, sino lo más importante y versátil para cuando se encuentren un problema de las mismas características.</p>
 <h2><a id="refs_uno" href="#refs_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Informe]:</h4>
