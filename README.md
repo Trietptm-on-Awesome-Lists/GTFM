@@ -32,14 +32,14 @@
 <p>Redactado por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
-<p><a href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read(). ASLR no aleatoriza las direcciones</a></p>
+<p><a href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></p>
 <p><a href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Exploiting-Reversing Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
 En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y debe ser versátil para cuando se encuentren un problema de las mismas características sepan resolverlo o le ayuden.</p>
 <p>Esta página web será un documento vivo ya que estará en actualización diaria debido a mi estudio constante.</p>
-<h2><a id="refs_uno" href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read(). ASLR no aleatoriza las direcciones</a></h2>
+<h2><a id="refs_uno" href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado.
 <h4>[Tecnica]:</h4>
