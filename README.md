@@ -142,7 +142,7 @@ Violación de segmento
 </code></pre>
 Por último ya sabiendo que tenemos controlado <code>$eip</code> lo único que necesitamos es usar la dirección de la función <code>not_called()</code> para que apunte allí y nos ejecute una shell.
 <p><em><strong>Obteniendo root shell</strong></em></p>
-Pudimos debuggear y analizar el binario en nuestra maquina, pero ahora toca la fase en la que ganamos acceso. El binario vulnerable esta ejecutandose en el servidor victima en el puerto 1234.
+Pudimos debuggear y analizar el binario en nuestra máquina, pero ahora toca la fase en la que ganamos acceso. El binario vulnerable esta ejecutándose en el servidor víctima en el puerto <code>1234</code>.
 <pre><code>root@kali:~/Desktop# nc -lvnp 1234 -e ./rop1-fa6168f4d8eba0eb
 listening on [any] 1234 ...
 connect to [192.168.32.129] from (UNKNOWN) [192.168.32.142] 57178
