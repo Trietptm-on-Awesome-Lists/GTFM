@@ -35,6 +35,7 @@
 <p><a href="#refs_uno">1. Python input 'eval' function.</a></p>
 <p><a href="#refs_dos">2. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></p>
 <p><a href="#refs_tres">3. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
+<p><a href="#refs_cuatro">4. Python input 'eval' function y "del" import.</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Exploiting-Reversing Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
@@ -43,6 +44,23 @@ En la sección de comandos sólo me limito a poner el output del comando mas des
 <h2><a id="refs_uno" href="#refs_uno">1. Python input 'eval' function.</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar la función vulnerable input para obtener una shell.
+Código:
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic"># task1.py</span>
+<span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Welcome to mystery math!&quot;</span>
+
+flag = <span style="color: #0000FF">&quot;xxxxxxxxxx&quot;</span>
+
+<span style="color: #000080; font-weight: bold">while</span> True:
+  x = input(<span style="color: #0000FF">&quot;Enter number 1&gt; &quot;</span>)
+  x = x*x + ord(flag[<span style="color: #0000FF">0</span>]) * ord(flag[<span style="color: #0000FF">1</span>]) + ord(flag[<span style="color: #0000FF">2</span>]) * x
+  y = input(<span style="color: #0000FF">&quot;Enter number 2&gt; &quot;</span>)
+  <span style="color: #000080; font-weight: bold">if</span> y / <span style="color: #0000FF">6</span> + <span style="color: #0000FF">7</span> - y == x:
+    <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Here ya go! &quot;</span>, flag
+    exit(<span style="color: #0000FF">0</span>)
+  <span style="color: #000080; font-weight: bold">else</span>:
+    <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Your lucky number is &quot;</span>, x - y
+</pre></div>
+
 <h4>[Tecnica]:</h4>
 Importaremos <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code>
 <h4>[Informe]:</h4>
@@ -415,3 +433,44 @@ p.interactive()
 </div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a>
+<h2><a id="refs_cuatro" href="#refs_cuatro">4. Python input 'eval' function y "del" import.</a></h2>
+<h4>[Resumen]:</h4>
+Tenemos que explotar la función vulnerable input para obtener una shell.
+Código:
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-style: italic"># task3.py</span>
+<span style="color: #008800; font-style: italic"># Remember kids: this is bad code. Try not code like this :P</span>
+<span style="color: #000080; font-weight: bold">from</span> os <span style="color: #000080; font-weight: bold">import</span> path
+<span style="color: #000080; font-weight: bold">del</span> __builtins__.__dict__[<span style="color: #0000FF">&#39;__import__&#39;</span>]
+<span style="color: #000080; font-weight: bold">del</span> __builtins__.__dict__[<span style="color: #0000FF">&#39;reload&#39;</span>]
+
+<span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Welcome to the food menu!&quot;</span>
+choices = (
+  (<span style="color: #0000FF">&quot;Chicken Asada Burrito&quot;</span>, <span style="color: #0000FF">7.69</span>, <span style="color: #0000FF">&quot;caburrito.txt&quot;</span>),
+  (<span style="color: #0000FF">&quot;Beef Chow Mein&quot;</span>, <span style="color: #0000FF">6.69</span>, <span style="color: #0000FF">&quot;beefchow.txt&quot;</span>),
+  (<span style="color: #0000FF">&quot;MeatBurger Deluxe&quot;</span>, <span style="color: #0000FF">10.49</span>, <span style="color: #0000FF">&quot;no description&quot;</span>),
+  <span style="color: #008800; font-style: italic"># ...</span>
+)
+
+<span style="color: #000080; font-weight: bold">def</span> print_description(n):
+  <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;&quot;</span>
+  <span style="color: #000080; font-weight: bold">if</span> n &gt;= len(choices):
+    <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;No such item!&quot;</span>
+  <span style="color: #000080; font-weight: bold">elif</span> <span style="font-weight: bold">not</span> path.exists(choices[n][<span style="color: #0000FF">2</span>]):
+    <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;No description yet, but we promise it&#39;s tasty!&quot;</span>
+  <span style="color: #000080; font-weight: bold">else</span>:
+    <span style="color: #000080; font-weight: bold">print</span> open(choices[n][<span style="color: #0000FF">2</span>]).read()
+
+<span style="color: #000080; font-weight: bold">def</span> show_menu():
+  <span style="color: #000080; font-weight: bold">for</span> i <span style="font-weight: bold">in</span> xrange(len(choices)):
+    <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;[% 2d] $% 3.2f %s&quot;</span> % (i, choices[i][<span style="color: #0000FF">1</span>], choices[i][<span style="color: #0000FF">0</span>])
+
+<span style="color: #000080; font-weight: bold">while</span> True:
+  <span style="color: #000080; font-weight: bold">print</span> <span style="color: #0000FF">&quot;Which description do you want to read?&quot;</span>
+  show_menu()
+  print_description(input(<span style="color: #0000FF">&#39;&gt; &#39;</span>))
+</pre></div>
+
+<h4>[Tecnica]:</h4>
+No podremos importar <code>OS</code> en nuestro exploit para ejecutar <code>/bin/bash</code>, por tanto deberemos pensar en otro bypass.
+<h4>[Informe]:</h4>
+Sabiendo que en el script que ejecuta el servidor usa la función vulnerable <code>input</code> simplemente tenemos que hacer un exploit(ver:exploit) y tener un netcat a la escucha para recibir una shell reversa debido a que el socket no nos envia de vuelta el data. 
