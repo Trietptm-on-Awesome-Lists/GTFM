@@ -587,6 +587,17 @@ id
 running sh...id
 uid=1000(naivenom) gid=1000(naivenom) grupos=1000(naivenom),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),106(netdev),111(debian-tor),121(bluetooth),132(scanner)
 </code></pre>
-Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en la función <code>printf(buf)</code> no existe ningún formato de cadena<code>%s</code> como por ejemplo en la siguiente llamada a la misma función por lo tanto tenemos total control de volcar algún contenido en memoria.
-
+Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en la función <code>printf(buf)</code> no existe ningún formato de cadena<code>%s</code> como por ejemplo en la siguiente llamada a la misma función por lo tanto tenemos total control de volcar algún contenido en memoria. Si ejecutamos el binario y le pasamos testigo de formato <code>%s</code> tenemos una Violacion de Segmento y eso son buenas noticias!.
+<pre><code>naivenom@parrot:[~/pwn/format1] $ ./format1 
+%s%s
+%s%s
+Violación de segmento
+</code></pre>
+Ocurre esto debido a que pasamos dos argumentos que en realidad no existen en el código. Estos téstigo de formato son simplemente argumentos que va a recibir la función cuando sea llamada con <code>call</code> siendo unos punteros en el stack que apuntan a una dirección de memoria cuyo contenido sería por ejemplo si es un testigo de formato de tipo cadena <code>%s</code> pues una string.
+Por regla general los argumentos que recibe una función pueden ser cadenas, variables o direcciones de memoria. En el stack podemos tener direcciones de memoria o contenido, incluso direcciones de memoria que apuntan a una dirección del stack. Para esta pequeña PoC vamos a enviar un pequeño buffer de <code>AAAA</code> y al final obtenedremos con el valor en hexadecimal de estos valores. Si usamos el testigo de formato <code>%x</code> obtenemos un volcado de la memoria:
+<pre><code>naivenom@parrot:[~/pwn/format1] $ ./format1 
+AAAA.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x
+AAAA.ffc85f5c.00000050.000000c2.00000000.00c30000.00000000.ffc86054.00000000.00000000.00000041.41414141.3830252e
+3!
+</code></pre>
 <h4>[Comandos]:</h4>
