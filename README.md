@@ -33,18 +33,18 @@
 <h2 id="indice">Indice</h2>
 <h4 id="indice-exploiting">[Exploiting]</h4>
 <p><em><strong>ROP</strong></em></p>
+<p><a href="#rops_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></p>
 <p><em><strong>Buffer Overflow</strong></em></p>
+<p><a href="#overflow_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
 <p><em><strong>Python vulnerability code</strong></em></p>
-<p><a href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></p>
-<p><a href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></p>
-<p><a href="#refs_tres">3. Python input 'eval' function.</a></p>
-<p><a href="#refs_cuatro">4. Python input 'eval' function y 'import' bloqueado</a></p>
+<p><a href="#python_uno">1. Python input 'eval' function.</a></p>
+<p><a href="#python_dos">2. Python input 'eval' function y 'import' bloqueado</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Black Team Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
 En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y debe ser versátil para cuando se encuentren un problema de las mismas características sepan resolverlo o le ayuden.</p>
 <p>Esta página web será un documento vivo ya que estará en actualización diaria debido a mi estudio constante.</p>
-<h2><a id="refs_uno" href="#refs_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></h2>
+<h2><a id="rops_uno" href="#rops_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un ROP usando un buffer para la sobreescritura de EIP protegido con NX habilitado.
 <h4>[Técnica]:</h4>
@@ -137,7 +137,7 @@ p.interactive()
 </pre></div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2013/blob/master/pico-ctf-2013/rop-1/rop1-fa6168f4d8eba0eb">--ROP1 PICO CTF 2013--</a>
-<h2><a id="refs_dos" href="#refs_dos">2. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
+<h2><a id="overflow_uno" href="#overflow_uno">1. Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary)</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar un Buffer Overflow protegido con un stack canary float value.
 <h4>[Técnica]:</h4>
@@ -372,7 +372,7 @@ p.interactive()
 </div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2015/blob/master/csaw-ctf-2015/pwn/precision-100/precision_a8f6f0590c177948fe06c76a1831e650">--Precision100 CSAW CTF 2015--</a>
-<h2><a id="refs_tres" href="#refs_tres">3. Python input 'eval' function.</a></h2>
+<h2><a id="python_uno" href="#python_uno">1. Python input 'eval' function.</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar la función vulnerable input para obtener una shell.
 Código:
@@ -435,7 +435,7 @@ p.interactive()
 </pre></div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2013/tree/master/pico-ctf-2013/python-eval-1">--PYTHON EVAL 1 PICO CTF 2013--</a>
-<h2><a id="refs_cuatro" href="#refs_cuatro">4. Python input 'eval' function y 'import' bloqueado.</a></h2>
+<h2><a id="python_dos" href="#python_dos">2. Python input 'eval' function y 'import' bloqueado.</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar la función vulnerable input para obtener una shell.
 Código:
