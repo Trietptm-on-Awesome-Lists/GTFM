@@ -587,7 +587,7 @@ id
 running sh...id
 uid=1000(naivenom) gid=1000(naivenom) grupos=1000(naivenom),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),106(netdev),111(debian-tor),121(bluetooth),132(scanner)
 </code></pre>
-Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en la función <code>printf(buf)</code> no existe ningún formato de cadena<code>%s</code> como por ejemplo en la siguiente llamada a la misma función por lo tanto tenemos total control de volcar algún contenido en memoria. Si ejecutamos el binario y le pasamos testigo de formato <code>%s</code> tenemos una Violacion de Segmento y eso son buenas noticias!.
+Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en la función <code>printf(buf)</code> no existe ningún formato de cadena<code>%s</code> como por ejemplo en la siguiente llamada a la misma función, por lo tanto tenemos total control de volcar algún contenido en memoria. Si ejecutamos el binario y le pasamos testigo de formato <code>%s</code> tenemos una Violacion de Segmento y eso son buenas noticias!.
 <pre><code>naivenom@parrot:[~/pwn/format1] $ ./format1 
 %s%s
 %s%s
@@ -608,7 +608,7 @@ Ahora el siguiente paso sería encontrar la variable <code>x=3</code> en la secc
 - offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
 0x0804a02c  0300 0000 0000 0000 0000 0000 0000 0000  ................
 </code></pre>
-Por último, teniendo la dirección de memoria de la variable de tipo <code>int</code> solo nos hace falta hacer nuestro pequeño exploit y como el salto condicional nos indica que el registro <code>$eax</code> tiene que ser igual a la variable que es == 4, ya lo tenemos hecho!. Solo tenemos que escribir en la memoria usando python por ejemplo con <code>print</code> 4 Bytes, el número de argumentos necesarios hasta llegar en este caso <code>11</code> y el testigo de formato <code>%n</code> para que escribir un valor entero en esa dirección de memoria de la variable. El valor sería lo que printea, osea 4 Bytes <code>\x2c\xa0\x04\x08</code>.
+Por último, teniendo la dirección de memoria de la variable de tipo <code>int</code> solo nos hace falta hacer nuestro pequeño exploit y como el salto condicional nos indica que el registro <code>$eax</code> tiene que ser igual a la variable que es == 4, ya lo tenemos hecho!. Solo tenemos que escribir en la memoria usando python por ejemplo con <code>print</code> 4 Bytes, el número de argumentos necesarios hasta llegar en este caso <code>11</code> y el testigo de formato <code>%n</code> para escribir un valor entero en esa dirección de memoria de la variable. El valor sería lo que printea, osea 4 Bytes <code>\x2c\xa0\x04\x08</code>.
 <p><em><strong>Obteniendo user shell</strong></em></p>
 El usuario <code>guille</code> esta ejecutando en el servidor un binario vulnerable a format string por el puerto <code>1234</code>.
 <pre><code>$ nc -lvnp 1234 -e ./format1
