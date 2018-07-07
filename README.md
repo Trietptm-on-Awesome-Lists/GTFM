@@ -39,6 +39,8 @@
 <p><em><strong>Python vulnerability code</strong></em></p>
 <p><a href="#python_uno">1. Python input 'eval' function.</a></p>
 <p><a href="#python_dos">2. Python input 'eval' function y 'import' bloqueado</a></p>
+<p><em><strong>Format String</strong></em></p>
+<p><a href="#format_uno">1. Format String. NX habilitado y Stack Canary.</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Black Team Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
@@ -144,7 +146,6 @@ Tenemos que explotar un Buffer Overflow protegido con un stack canary float valu
 Smashing Stack sobreescribiendo EIP con una direccion de memoria controlada por nosotros apuntando al inicio del buffer + shellcode mod 0x0b + float value(stack canary).
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
-
 Comenzamos analizando estáticamente el código desensamblado del binario. La función más resañable donde se encuentra la vulnerabilidad es en el <code>main()</code>.
 En esta función una vez es llamada y configurar el stack en el prólogo ejecuta una instruccion realizando floating load <code>fld qword [0x8048690]</code>.
 Seguidamente carga el float value en el stack <code>fstp qword [esp + 0x98]</code>. Luego analizando el desensamblado del binario realiza una serie de llamadas  a <code>printf()</code>, <code>scanf()</code> y probablemente tengamos un Buffer Overflow (BoF de ahora en adelante) después de la función <code>scanf()</code> porque no controlora o checkeara cuantos caracteres o "junk" le enviemos en nuestro buffer.
@@ -515,3 +516,77 @@ p.interactive()
 </pre></div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2013/tree/master/pico-ctf-2013/python-eval-3">--PYTHON EVAL3 PICO CTF 2013--</a>
+<h2><a id="format_uno" href="#format_uno">1. Format String. NX habilitado y Stack Canary.</a></h2>
+<h4>[Resumen]:</h4>
+Tenemos que explotar format string para obtener una shell. Código:
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #008080">#undef _FORTIFY_SOURCE</span>
+<span style="color: #008080">#include &lt;stdio.h&gt;</span>
+<span style="color: #008080">#include &lt;unistd.h&gt;</span>
+<span style="color: #008080">#include &lt;string.h&gt;</span>
+
+<span style="color: #000080; font-weight: bold">int</span> x = <span style="color: #0000FF">3</span>;
+
+<span style="color: #000080; font-weight: bold">void</span> be_nice_to_people() {
+    <span style="color: #008800; font-style: italic">// /bin/sh is usually symlinked to bash, which usually drops privs. Make</span>
+    <span style="color: #008800; font-style: italic">// sure we don&#39;t drop privs if we exec bash, (ie if we call system()).</span>
+    <span style="color: #000080; font-weight: bold">gid_t</span> gid = getegid();
+    setresgid(gid, gid, gid);
+}
+
+<span style="color: #000080; font-weight: bold">int</span> main(<span style="color: #000080; font-weight: bold">int</span> argc, <span style="color: #000080; font-weight: bold">const</span> <span style="color: #000080; font-weight: bold">char</span> **argv) {
+    be_nice_to_people();
+    <span style="color: #000080; font-weight: bold">char</span> buf[<span style="color: #0000FF">80</span>];
+    bzero(buf, <span style="color: #000080; font-weight: bold">sizeof</span>(buf));
+    <span style="color: #000080; font-weight: bold">int</span> k = read(STDIN_FILENO, buf, <span style="color: #0000FF">80</span>);
+    printf(buf);
+    printf(<span style="color: #0000FF">&quot;%d!\n&quot;</span>, x); 
+    <span style="color: #000080; font-weight: bold">if</span> (x == <span style="color: #0000FF">4</span>) {
+        printf(<span style="color: #0000FF">&quot;running sh...\n&quot;</span>);
+        system(<span style="color: #0000FF">&quot;/bin/sh&quot;</span>);
+    }
+    <span style="color: #000080; font-weight: bold">return</span> <span style="color: #0000FF">0</span>;
+}
+</pre></div>
+<h4>[Técnica]:</h4>
+Format string.
+<h4>[Informe]:</h4>
+<p><em><strong>Recolección de información</strong></em></p>
+Primero debemos obtener toda la información posible del binario así que debemos realizar reversing y ver alguna vulnerabilidad en el desensamblado. Usando radare2 observamos que tenemos un buffer de 80 bytes y si queremos obtener una shell debemos hacer cumplir el salto condicional <code>jne</code>y que la variable <code>dword obj.x</code> sea igual a 4 para obtener <code>/bin/bash</code>.
+<pre><code>0x08048586      c74424085000.  mov dword [local_8h], 0x50  ; 'P' ; [0x50:4]=-1 ; 80
+|           0x0804858e      8d44242c       lea eax, dword [local_2ch]  ; 0x2c ; ',' ; 44
+|           0x08048592      89442404       mov dword [local_4h], eax
+|           0x08048596      c70424000000.  mov dword [esp], 0
+|           0x0804859d      e83efeffff     call sym.imp.read           ; ssize_t read(int fildes, void *buf, size_t nbyte)
+|           0x080485a2      89442428       mov dword [local_28h], eax
+|           0x080485a6      8d44242c       lea eax, dword [local_2ch]  ; 0x2c ; ',' ; 44
+|           0x080485aa      890424         mov dword [esp], eax
+|           0x080485ad      e83efeffff     call sym.imp.printf         ; int printf(const char *format)
+|           0x080485b2      8b152ca00408   mov edx, dword obj.x        ; [0x804a02c:4]=3
+|           0x080485b8      b8e0860408     mov eax, str.d              ; 0x80486e0 ; "%d!\n"
+|           0x080485bd      89542404       mov dword [local_4h], edx
+|           0x080485c1      890424         mov dword [esp], eax
+|           0x080485c4      e827feffff     call sym.imp.printf         ; int printf(const char *format)
+|           0x080485c9      a12ca00408     mov eax, dword obj.x        ; [0x804a02c:4]=3
+|           0x080485ce      83f804         cmp eax, 4                  ; 4
+|       ,=< 0x080485d1      7518           jne 0x80485eb
+|       |   0x080485d3      c70424e58604.  mov dword [esp], str.running_sh... ; [0x80486e5:4]=0x6e6e7572 ; "running sh..."
+|       |   0x080485da      e841feffff     call sym.imp.puts           ; int puts(const char *s)
+|       |   0x080485df      c70424f38604.  mov dword [esp], str.bin_sh ; [0x80486f3:4]=0x6e69622f ; "/bin/sh"
+|       |   0x080485e6      e845feffff     call sym.imp.system         ; int system(const char *string)
+</code></pre>
+Otra solución sería parchear el binario y en la instrucción <code>cmp eax, 4</code> cambiar el 4 por el 3.
+<pre><code>[0x0804854d]> s 0x080485ce
+[0x080485ce]> wa cmp eax, 3
+Written 3 byte(s) (cmp eax, 3) = wx 83f803
+</code></pre>
+Lo ejecutamos y tenemos shell.
+<pre><code>naivenom@parrot:[~/pwn/format1] $ ./patch 
+id
+id
+3!
+running sh...id
+uid=1000(naivenom) gid=1000(naivenom) grupos=1000(naivenom),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),106(netdev),111(debian-tor),121(bluetooth),132(scanner)
+</code></pre>
+Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en la función <code>printf(buf)</code> no existe ningún formato de cadena<code>%s</code> como por ejemplo en la siguiente llamada a la misma función por lo tanto tenemos total control de volcar algún contenido en memoria.
+
+<h4>[Comandos]:</h4>
