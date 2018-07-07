@@ -40,7 +40,7 @@
 <p><a href="#python_uno">1. Python input 'eval' function.</a></p>
 <p><a href="#python_dos">2. Python input 'eval' function y 'import' bloqueado</a></p>
 <p><em><strong>Format String</strong></em></p>
-<p><a href="#format_uno">1. Format String. NX habilitado y Stack Canary.</a></p>
+<p><a href="#format_uno">1. Format Strings. NX habilitado y Stack Canary.</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Black Team Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
