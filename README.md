@@ -42,7 +42,7 @@
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Black Team Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
-En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y debe ser versátil para cuando se encuentren un problema de las mismas características sepan resolverlo o le ayuden.</p>
+En la sección de comandos sólo me limito a poner el output del comando mas destacable, recomiendo que descarguen el binario y vean todo el contenido si lo requieren. Es un Field Manual y debe ser versátil para cuando se encuentren un problema de las mismas características sepan resolverlo o le ayuden y desarrollar así el pensamiento lateral.</p>
 <p>Esta página web será un documento vivo ya que estará en actualización diaria debido a mi estudio constante.</p>
 <h2><a id="rops_uno" href="#rops_uno">1. ROP,NX habilitado, usando buffer para sobreescritura de EIP apuntando a función que llama a "/bin/bash" y función read().</a></h2>
 <h4>[Resumen]:</h4>
