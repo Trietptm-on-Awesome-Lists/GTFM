@@ -39,8 +39,8 @@
 <p><em><strong>Python vulnerability code</strong></em></p>
 <p><a href="#python_uno">1. Python input 'eval' function.</a></p>
 <p><a href="#python_dos">2. Python input 'eval' function y 'import' bloqueado</a></p>
-<p><em><strong>Format String</strong></em></p>
-<p><a href="#format_uno">1. Format Strings. NX habilitado y Stack Canary.</a></p>
+<p><em><strong>Format Strings</strong></em></p>
+<p><a href="#format_uno">1. Format Strings. NX habilitado y Stack Canary. Bypass en la estructura de control por escritura en memoria de un valor en la dirección de memoria de una variable.</a></p>
 <h2 id="introduccion">Introducción</h2>
 <p>Recomiendo que se tome este manual como una referencia de los binarios que he ido realizando a lo largo del 2018 y posterior. 
 Realmente cada técnica esta dividida en <em>seis</em> apartados con lo mas resañable e interesante a la hora de usar el Black Team Field Manual como una referencia y consulta a la hora de estar explotando o reverseando un binario y ver la técnica usada, los comandos usados, un breve resumen de un informe mas detallado y el código del exploit de su desarrollo.
@@ -516,7 +516,7 @@ p.interactive()
 </pre></div>
 <h4>[URL Reto]:</h4>
 <a href="https://github.com/ctfs/write-ups-2013/tree/master/pico-ctf-2013/python-eval-3">--PYTHON EVAL3 PICO CTF 2013--</a>
-<h2><a id="format_uno" href="#format_uno">1. Format String. NX habilitado y Stack Canary.</a></h2>
+<h2><a id="format_uno" href="#format_uno">1. Format Strings. NX habilitado y Stack Canary. Bypass en la estructura de control por escritura en memoria de un valor en la dirección de memoria de una variable</a></h2>
 <h4>[Resumen]:</h4>
 Tenemos que explotar format string para obtener una shell. Código:
 <div style="background: #ffffff; overflow:auto;width:auto;"><pre style="margin: 0; line-height: 125%"><span style="color: #008080">#undef _FORTIFY_SOURCE</span>
@@ -548,7 +548,7 @@ Tenemos que explotar format string para obtener una shell. Código:
 }
 </pre></div>
 <h4>[Técnica]:</h4>
-Format string.
+Format Strings. NX habilitado y Stack Canary. Bypass en la estructura de control por escritura en memoria de un valor en la dirección de memoria de una variable
 <h4>[Informe]:</h4>
 <p><em><strong>Recolección de información</strong></em></p>
 Primero debemos obtener toda la información posible del binario así que debemos realizar reversing y ver alguna vulnerabilidad en el desensamblado. Usando radare2 observamos que tenemos un buffer de 80 bytes y si queremos obtener una shell debemos hacer cumplir el salto condicional <code>jne</code>y que la variable <code>dword obj.x</code> sea igual a 4 para obtener <code>/bin/bash</code>.
