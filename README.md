@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://stackedit.io/style.css" />
 </head>
 <body class="stackedit">
-  <div class="stackedit__html"><h1 id="manual">[User Space]...</h1>
+  <div class="stackedit__html"><h1 id="manual">Técnicas fundamentales de Exploiting y Reversing</h1>
   <pre><code>❯ ./rabbit_pwned
 
 	                  .".
